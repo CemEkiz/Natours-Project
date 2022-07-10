@@ -1,0 +1,65 @@
+/////////////////////////// RESET ///////////////////////////
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+body {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%; //   1rem = 10px         (10px / 16px = 0.625%)
+
+  ////////// MEDIA QUERIES x @MIXINS (2/2) //////////
+
+  //////////////////// SOLUTION 1-1 ////////////////////
+  /*
+   Utilisation des MQ dans SASS sans @mixins
+   On imbrique alors les MQ de manière classique grâce au nesting que permet SASS
+  */
+
+  // @media (max-width: 600px) {
+  //   font-size: 50%;
+  // }
+
+  //////////////////// SOLUTION 2-2 ////////////////////
+  /* 
+  Utilisation des MQ dans SASS avec @mixins : on fait appel au mixin avec @include et on écrit notre déclaration MQ qui sera importée avec la directive @content qui est dans le @mixin
+  */
+
+  //   @include respond-phone {
+  //     font-size: 50%;
+  //   }
+  // }
+
+  //////////////////// SOLUTION 3-2 ////////////////////
+  /* 
+  L'ordre des MQ à respecter en Desktop-first : du plus grand au plus petit car il y aura conflit et le dernier MQ sera appliqué donc l'ordre est important.
+  
+  Exemple : admettons que notre fenêtre a une largeur de 700px. Les MQ tab-land (> 1200px) et
+  tab-port (> 900px) sont valables car 700px est inférieur à ces 2 max-width. Donc il y a conflit.
+  Finalité : la dernière déclaration de MQ sera appliquée, c'est pourquoi l'ordre doit être respectée.
+  */
+
+  @include respond(tab-land) {
+    font-size: 56.25%; //   1rem = 9px            (9px / 16px = 0.5625%)
+  }
+
+  @include respond(tab-port) {
+    font-size: 50%; //      1rem = 8px            (8px / 16px = 0.50%)
+  }
+
+  @include respond(big-desktop) {
+    font-size: 75%; //      1rem = 12px           (12px / 16px = 0.75%)
+  }
+}
+
+::selection {
+  background-color: $color-primary;
+  color: $color-white;
+}

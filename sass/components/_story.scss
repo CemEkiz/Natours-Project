@@ -1,0 +1,93 @@
+.story {
+  width: 75%;
+  margin: 0 auto;
+  font-size: $default-font-size;
+  box-shadow: 0 3rem 6rem rgba($color: $color-black, $alpha: 0.1);
+  background-color: rgba($color: $color-white, $alpha: 0.6);
+  border-radius: 3px;
+  padding: 6rem;
+  // Je rajoute 3rem de padding à gauche car le cercle a été décalée à gauche de 3rem
+  padding-left: 9rem;
+  // Cela permet de créer une forme de trapèze mais le contenu est aussi "skew" (voir prochaine règle CSS pour règler ce problème
+  transform: skewX(-12deg);
+
+  // Le but de cette règle CSS est de faire en sorte que seulement le container soit skew (et pas son contenu, ce sélecteur vise tous les enfants de .story
+  // Dans cette situation ça ne fonctionne pas car .story__shape a déjà une propriété "transform" donc il faut rajouter la fonction skewX manuellement chez les enfants concernés
+  // & > * {
+  //   transform: skewX(12deg);
+  // }
+
+  @include respond(tab-port) {
+    width: 100%;
+    padding: 4rem;
+    padding-left: 7rem;
+  }
+
+  @include respond(phone) {
+    transform: skewX(0);
+  }
+
+  &__shape {
+    position: relative;
+    width: 15rem;
+    height: 15rem;
+    float: left;
+    // La propriété "shape-outside" nécessite des conditions : width, height, float
+    // -webkit-shape-outside: circle (50% at 50% 50%);
+    // shape-outside: circle(50% at 50% 50%);
+    // Ensuite il faut utiliser la propriété clip-path pour créer le cercle
+    // clip-path: circle(50% at 50% 50%);
+    // Pour ajouter de l'espace entre le cercle et le texte il vaut mieux utiliser "transform" plutôt que "margin"
+    transform: translateX(-3rem) skewX(12deg);
+    overflow: hidden;
+    border-radius: 50%;
+
+    // Si le navigateur supporte clip-path ou -webkit-clip-path alors le code sera appliqué, dans le cas contraire ce sera le code dans .story__shape (ci-dessus) qui sera appliqué
+    @supports (clip-path: polygon(0 0)) or (-webkit-clip-path: polygon(0 0)) {
+      -webkit-clip-path: circle(50% at 50% 50%);
+      clip-path: circle(50% at 50% 50%);
+      -webkit-shape-outside: circle (50% at 50% 50%);
+      shape-outside: circle(50% at 50% 50%);
+    }
+
+    @include respond(phone) {
+      transform: translateX(-3rem) skewX(0);
+    }
+  }
+
+  &__img {
+    // J'ai essayé avec "width" mais ça ne remplit pas entièrement la forme car l'image est + large que haute, mais avec "height" ça fonctionne !
+    height: 100%;
+    // Pour centrer l'image dans le cercle + upscale pour son état initiale avant hover
+    transform: translateX(-4rem) scale(1.4);
+    transition: all 0.5s;
+  }
+
+  &__text {
+    transform: skewX(12deg);
+    transform: skewX(0);
+  }
+
+  // Ceci est l'état initiale de l'élément story__caption
+  &__caption {
+    @include centre; // relative à .story__shape
+    color: $color-white;
+    text-transform: uppercase;
+    font-size: 1.7rem;
+    text-align: center;
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  // Ceci est l'état qu'aura l'élément story__caption quand on va hover .story
+  &:hover &__caption {
+    opacity: 1; // L'opacité passe donc de 0 à 1
+    transform: translate(-50%, -50%); // La position Y passe de 20% à -50%
+  }
+
+  // Ceci est l'état qu'aura l'élément story__img quand on va hover .story
+  &:hover &__img {
+    transform: translateX(-4rem) scale(1);
+    filter: blur(3px) brightness(80%);
+  }
+}

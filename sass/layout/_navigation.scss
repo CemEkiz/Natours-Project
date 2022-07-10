@@ -1,0 +1,202 @@
+.navigation {
+  // L'utilisation du checkbox pour le menu de navigation est une sorte de "hack"
+  &__checkbox {
+    display: none;
+  }
+
+  // C'est l'élément <label> avec la class navigation__button, il est utilisé avec le hack du checkbox (technique similaire au radio-button du formulaire)
+  &__button {
+    position: fixed;
+    top: 6rem;
+    right: 6rem;
+    background-color: $color-white;
+    height: 7rem;
+    width: 7rem;
+    border-radius: 50%;
+    box-shadow: 0 1rem 3rem rgba($color: $color-black, $alpha: 0.1);
+    text-align: center;
+    cursor: pointer;
+    z-index: 2000;
+
+    @include respond(tab-port) {
+      top: 4rem;
+      right: 4rem;
+    }
+
+    @include respond(phone) {
+      top: 3rem;
+      right: 3rem;
+    }
+  }
+
+  // Explication : en fait ce cercle dégradé va être caché derrière le cercle blanc du menu (__button), lorsque l'on cliquera sur l'icône du menu ce petit cercle dégradé va venir recouvrir la page avec une petite animation
+  &__background {
+    position: fixed;
+    top: 6.5rem;
+    right: 6.5rem;
+    height: 6rem;
+    width: 6rem;
+    border-radius: 50%;
+    background-image: radial-gradient(
+      $color-primary-light,
+      $color-primary-dark
+    );
+    z-index: 1000;
+    transition: transform 0.8s cubic-bezier(0.86, 0, 0.07, 1); // les chiffres sont c/c depuis un site cheatsheet
+
+    // Je peux temporairement scale ce cercle caché pour voir le résultat final et pour coder plus facilement le contenu qui sera par-dessus
+    // transform: scale(80);
+
+    @include respond(tab-port) {
+      top: 4.5rem;
+      right: 4.5rem;
+    }
+
+    @include respond(phone) {
+      top: 3.5rem;
+      right: 3.5rem;
+    }
+  }
+
+  // C'est l'élément <nav> qui va contenir la <ul>
+  &__nav {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1500;
+    transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    // Disparition du nav
+    opacity: 0;
+    width: 0;
+    visibility: hidden;
+  }
+
+  // Récapitulatif z-index : le __button blanc a le z-index le plus élevé car il doit TOUJOURS être visible par-dessus tout, il est également fixed en haut à droite. Quant au __background, il est à la base sous le boutton blanc et il doit également être sous le __nav (mais il doit être quand même au dessus du contenu de la page web), donc il a le z-index le moins elevé. Et pour le __nav (la liste des éléments de navigation), il faut qu'il soit au dessus de la page web également mais au dessus du __background donc il faut qu'il ait + que le __background, c'est tout ce qui compte !
+
+  // C'est l'élément <ul> qui va contenir les <li>
+  // Cette liste n'a pas besoin d'avoir de parent relative car de toute façon on veut qu'il soit centré sur toute la page donc il peut se reposer sur <body>
+  &__list {
+    @include centre;
+    list-style: none;
+    text-align: center;
+    width: 100%;
+  }
+
+  // C'est l'élément <li> qui va contenir les liens <a>
+  &__item {
+    margin: 1rem;
+  }
+
+  // C'est l'élément <a>
+  &__link {
+    &:link,
+    &:visited {
+      display: inline-block; // Très important pour faire fonctionenr le padding et l'animation
+      padding: 1rem 2rem;
+      font-size: 3rem;
+      font-weight: 300;
+      color: $color-white;
+      text-decoration: none;
+      text-transform: uppercase;
+
+      // Création du fond des liens du menu
+      background-image: linear-gradient(
+        120deg,
+        transparent 0%,
+        transparent 50%,
+        $color-white 50%
+      );
+      background-size: 250%;
+      transition: all 0.4s;
+
+      span {
+        margin-right: 1.5rem;
+        display: inline-block;
+      }
+    }
+
+    &:hover,
+    &:active {
+      background-position: 100%;
+      color: $color-primary;
+      transform: translateX(1rem);
+    }
+  }
+
+  // FONCTIONNALITÉ
+
+  // Réalisation du hack pour faire apparaître le menu avec checkbox (technique similaire au radio-button:checked du formulaire
+  &__checkbox:checked ~ &__background {
+    transform: scale(80);
+  }
+
+  &__checkbox:checked ~ &__nav {
+    opacity: 1;
+    width: 100%;
+    visibility: visible;
+  }
+
+  // Création du Hamburger Menu
+  // En fait, une fois qu'on active display-inline-block, on voit 3 traits apparaître (car grâce à ce display que le width et le height sont pris en compte), les 3 correspondent à : span, before et after = 3 !
+  &__icon {
+    position: relative;
+    margin-top: 3.4rem;
+
+    &,
+    &::before,
+    &::after {
+      display: inline-block;
+      width: 3rem;
+      height: 2px;
+      background-color: $color-grey-dark-3;
+    }
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      transition: all 0.3s;
+    }
+
+    &::before {
+      top: -0.8rem;
+    }
+
+    &::after {
+      top: 0.8rem;
+    }
+  }
+
+  // Animation lors du hover du bouton de menu -> la barre du haut monte un petit peu et celle du bas descend un petit peu
+  &__button:hover &__icon::before {
+    top: -1rem;
+  }
+
+  &__button:hover &__icon::after {
+    top: 1rem;
+  }
+
+  // Animation lors du clic du menu -> la barre du milieu devient transparent et les 2 restantes se croisent pour former une croix
+  // Explication du sélecteur, quand __checkbox est checked, on sélectionne __button puis __icon (c'est __icon qui sera mis en forme)
+  &__checkbox:checked + &__button &__icon {
+    background-color: transparent;
+  }
+
+  // Que ça soit pour ::before et ::after, la propriété top: 0; permet de centrer (j'sais pas pourquoi mais ça fonctionne.)
+  &__checkbox:checked + &__button &__icon::before {
+    top: 0;
+    transform: rotate(
+      135deg
+    ); // ça marche avec 45 mais avec un 180-45 = 135 ça fait un effet + stylé
+  }
+
+  &__checkbox:checked + &__button &__icon::after {
+    top: 0;
+    transform: rotate(
+      -135deg
+    ); // ça marche avec -45 mais avec un 180-45 = 135 (-135deg) ça fait un effet + stylé
+  }
+}

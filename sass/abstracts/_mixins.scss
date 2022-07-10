@@ -1,0 +1,83 @@
+@mixin clearfix {
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+@mixin centre {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+////////// MEDIA QUERIES x @MIXINS (1/2) //////////
+
+///// Breakpoint /////
+/*
+0 - 600px:          Mobile                  (max-width: 600px)    => 37.5em
+600 - 900px:        Tablet Portrait         (max-width: 900px)    => 56.25em
+900 - 1200px:       Tablet Landscape        (max-width: 1200px)   => 75em
+1800px +:           Big Desktop             (min-width: 1800px)   => 112.5em
+
+/!\ Media Querie ne prend pas en compte la modification du html font-size (racine)
+=> On se base par défaut sur 16px pour calculer les em/rem
+*/
+
+//////////////////// SOLUTION 2-1 ////////////////////
+/*
+1) Créer un @mixin dans le dossier _mixins.scss (ici)
+2) @include le @mixin dans le sélecteur concerné + apporter les modifications voulues
+(voir _base.scss pour cet exemple)
+-> suite dans _base
+*/
+
+//  @mixin respond-phone {
+//    @media (max-width: 600px) {
+//      @content;
+//    }
+//  }
+
+//////////////////// SOLUTION 3-1 ////////////////////
+/* 
+Utilisation de la fonction "@if" (le mieux est de pratiquer pour assimiler)
+
+/!\ Rappel: on utilise l'unité de mesure em pour que la taille de police par défaut choisis par l'utilisateur dans son navigateur soit prise en compte (=> accessibilité)
+
+/!\ Rappel 2: Media Querie ne prend pas en compte la modification du html font-size (racine)
+=> Lorsqu'on écrit des Media Queries on se base toujours sur 16px pour calculer les em/rem
+
+-> suite dans _base
+*/
+
+@mixin respond($breakpoint) {
+  /// 600px ///       (600px / 16px = 37.5em)
+  @if $breakpoint == phone {
+    @media only screen and (max-width: 37.5em) {
+      @content;
+    }
+  }
+
+  /// 900px ///       (900px / 16px = 56.25em)
+  @if $breakpoint == tab-port {
+    @media only screen and (max-width: 56.25em) {
+      @content;
+    }
+  }
+
+  /// 1200px ///      (1200px / 16px = 75em)
+  @if $breakpoint == tab-land {
+    @media only screen and (max-width: 75em) {
+      @content;
+    }
+  }
+
+  /// 1800px ///      (1800px / 16px = 112.5em)
+  @if $breakpoint == big-desktop {
+    @media only screen and (min-width: 112.5em) {
+      @content;
+    }
+  }
+}

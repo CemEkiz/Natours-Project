@@ -1,0 +1,17 @@
+.bg-video {
+  position: absolute; // relative à .section-stories
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+  opacity: 0.15;
+
+  &__content {
+    // Mettre le width et le height à 100% permet de conserver l'aspect ratio
+    height: 100%;
+    width: 100%;
+    // Cela permet de couvrir entièrement son box-parent tout en conservant son aspect ratio
+    object-fit: cover;
+  }
+}
